@@ -22,6 +22,16 @@ The COTS holds software modules that are ready to be inserted in any project
 
 Note: COTS still in progress
 
+---
+## Drivers setup
+driversSetup is a tool to create required files for each module in the COTS, checking for multiplication, including libraries and header files, adding files' headers and header guards.
+
+- Path of COTS needs to be added to environment variables as 'COTS'
+- Files' structure must be as follow:
+
+ <p align="center">
+  <img  src="../media/filesStructure.PNG ?raw=true">
+</p>
 
 
 
