@@ -29,10 +29,9 @@ driversSetup is a tool to create required files for each module in the COTS, che
 - Path of COTS needs to be added to environment variables as 'COTS'
 - Files' structure must be as follow:
 
- <p align="center">
-  <img  src="../media/filesStructure.PNG ?raw=true">
+ <p>
+  <img  src="../media/filesStructure.PNG?raw=true">
 </p>
-
 
 
 
