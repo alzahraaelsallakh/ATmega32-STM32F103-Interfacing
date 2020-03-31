@@ -30,7 +30,7 @@ typedef enum Error
   
 }ErrorStatus;
 
-
+#define STD_TYPES_ERROR                 u8
 #define STD_TYPES_ERROR_NOK             1
 #define STD_TYPES_ERROR_OK              2
 #define STD_TYPES_ERROR_NULL_POINTER    3
