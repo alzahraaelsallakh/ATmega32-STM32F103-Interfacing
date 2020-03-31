@@ -15,6 +15,14 @@ creationDate = date.today().strftime("%d %b %Y")
 driverName = ""
 driverLayer = ""
 
+initFunctiton = '''\n\n/*
+    Description: This function shall initiate '''+driverName+'''
+    Input: void
+    output: STD_TYPES_ERROR
+*/    
+extern STD_TYPES_ERROR '''+driverName+'''_errInit (void);\n\n
+'''
+
 requiredFiles = []
 requiredFilesMCAL = ['_program.c','_interface.h','_config.h','_register.h','_private.h']
 requiredFilesHAL = ['_program.c','_interface.h','_config.h','_private.h']
@@ -127,6 +135,8 @@ def createFiles():
       fileName = fileName.upper()
       opened.write('#ifndef '+fileName+'\n')
       opened.write('#define '+fileName+'\n\n')
+      if (fileName.split('_')[1] == "INTERFACE"):
+        opened.write(initFunctiton)
       opened.write('#endif\n')
     opened.close()
 
@@ -151,12 +161,13 @@ def setLibraries():
   #Returning Back to Original Path
   os.chdir(callePath)
 
+# Editing program file by adding includes and init functions
 def editFiles():
-  
+   
   #Adding required driver incluedes depending on its layer
   if driverLayer == "MCAL" or driverLayer == "HAL" or driverLayer == "OS":
   
-    includedFiles = [incFile for incFile in requiredFiles if incFile != 'program.c']
+    includedFiles = [incFile for incFile in requiredFiles if incFile != '_program.c']
     
     progName = driverName+'_program.c'
     prog = open(progName,'a')
@@ -167,8 +178,10 @@ def editFiles():
     #Including driver headers
     for includedFile in includedFiles:
       prog.write('#include "'+driverName+includedFile+'"\n')
-    prog.close()
     
+    prog.write(initFunctiton)
+    prog.close()
+
     
 def main():
   global driverName
