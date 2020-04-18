@@ -62,7 +62,7 @@ static void voidExecute (void)
 {
   if (URTM_BusyFlag == 0)
   {
-    void start();
+    voidStart();
   }
   else
   {
@@ -111,7 +111,7 @@ static void voidRecAsynch (void)
 static void voidSendAsynch (void)
 {
   u8 Local_u8Counter = 0;
-  UART_u8TransmitDataAsynch(URTM_QUEUE[URTM_QCurrent].DataBuffer[Local_u8Counter],sendAsynchC)
+  UART_u8TransmitDataAsynch(URTM_QUEUE[URTM_QCurrent].DataBuffer[Local_u8Counter]);
 }
 
 static void voidRecSync (void)

@@ -37,7 +37,8 @@
  */
 #define UART_u8_SYSTEM_FREQ UART_SYSTEM_FREQ_8M
 
-
+/* Configuration time out
+*/
 
 #define UART_u32_TIME_OUT_THRESHOLD    10000UL
 

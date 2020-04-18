@@ -25,4 +25,25 @@
 #define UART_SYSTEM_FREQ_12M    1U
 #define UART_SYSTEM_FREQ_16M    2U
 
+/*
+	Registers' Bits
+*/
+
+#define UCSRA_U2X		  1
+#define UCSRA_TX_CMP	  6
+#define UCSRA_RX_CMP	  7
+						  
+#define UCSRB_UCSZ2		  2
+#define UCSRB_TX_EN		  3
+#define UCSRB_RX_EN		  4
+#define UCSRB_UDRIE		  5
+#define UCSRB_TX_INT_EN	  6
+#define UCSRB_RX_INT_EN	  7
+						  
+#define UCSRC_UCSZ0		  1
+#define UCSRC_UCSZ1		  2
+#define UCSRC_USBS		  3
+#define UCSRC_UPM0		  4
+#define UCSRC_URSEL		  7
+
 #endif
