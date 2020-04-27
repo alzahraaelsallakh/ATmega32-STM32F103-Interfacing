@@ -15,14 +15,6 @@ creationDate = date.today().strftime("%d %b %Y")
 driverName = ""
 driverLayer = ""
 
-initFunctiton = '''\n\n/*
-    Description: This function shall initiate '''+driverName+'''
-    Input: void
-    output: STD_TYPES_ERROR
-*/    
-extern STD_TYPES_ERROR '''+driverName+'''_errInit (void);\n\n
-'''
-
 requiredFiles = []
 requiredFilesMCAL = ['_program.c','_interface.h','_config.h','_register.h','_private.h']
 requiredFilesHAL = ['_program.c','_interface.h','_config.h','_private.h']
@@ -128,6 +120,13 @@ def createFiles():
     opened.write(container)
     opened.write('\n')
     
+    initFunctiton = '''\n\n/*
+    Description: This function shall initiate '''+driverName+'''
+    Input: void
+    output: STD_TYPES_ERROR
+*/    
+extern STD_TYPES_ERROR '''+driverName+'''_errInit (void);\n\n
+'''
     
     #Adding file guard to headers
     if (file.split('.')[1] == "h"):
@@ -163,6 +162,15 @@ def setLibraries():
 
 # Editing program file by adding includes and init functions
 def editFiles():
+   
+   
+  initFunctiton = '''\n\n/*
+    Description: This function shall initiate '''+driverName+'''
+    Input: void
+    output: STD_TYPES_ERROR
+*/    
+STD_TYPES_ERROR '''+driverName+'''_errInit (void)\n{\n\n\n}\n\n
+'''
    
   #Adding required driver incluedes depending on its layer
   if driverLayer == "MCAL" or driverLayer == "HAL" or driverLayer == "OS":
