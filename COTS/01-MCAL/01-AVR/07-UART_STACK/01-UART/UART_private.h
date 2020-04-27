@@ -29,21 +29,34 @@
 	Registers' Bits
 */
 
+/* UCSRA Register */
+#define UCSRA_MPCM		  0
 #define UCSRA_U2X		  1
+#define UCSRA_PE 		  2
+#define UCSRA_DOR		  3
+#define UCSRA_FE		  4
+#define UCSRA_UDRE		  5
 #define UCSRA_TX_CMP	  6
 #define UCSRA_RX_CMP	  7
-						  
+
+/* UCSRB Register */
+#define UCSRB_TXB8		  0
+#define UCSRB_RXB8		  1
 #define UCSRB_UCSZ2		  2
 #define UCSRB_TX_EN		  3
 #define UCSRB_RX_EN		  4
 #define UCSRB_UDRIE		  5
 #define UCSRB_TX_INT_EN	  6
 #define UCSRB_RX_INT_EN	  7
-						  
+
+/* UCSRC Register */
+#define UCSRC_UCPOL		  0
 #define UCSRC_UCSZ0		  1
 #define UCSRC_UCSZ1		  2
 #define UCSRC_USBS		  3
 #define UCSRC_UPM0		  4
+#define UCSRC_UPM1		  5
+#define UCSRC_UMSEL		  6
 #define UCSRC_URSEL		  7
 
 #endif

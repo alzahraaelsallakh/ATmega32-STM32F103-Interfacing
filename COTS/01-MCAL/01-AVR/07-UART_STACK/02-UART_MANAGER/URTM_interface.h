@@ -13,7 +13,7 @@
 #define URTM_SEND_SYNC    0 
 #define URTM_SEND_ASYNCH  1
 #define URTM_REC_SYNC     2
-#define URTM_REC_ASYNCH   2
+#define URTM_REC_ASYNCH   3
 
 
 typedef struct 
@@ -22,10 +22,13 @@ typedef struct
   u8 * DataBuffer;
   u8 Length;
   void (*CallBack)(void);
+
 }URTM_JobRequest;
 
 
-u8 URTM_u8PerformJobRequest (URTM_JobRequest Copy_JobInfo);
+STD_TYPES_ERROR URTM_u8PerformJobRequest (URTM_JobRequest Copy_JobInfo);
+
+STD_TYPES_ERROR URTM_voidExecuteJobs(void);
 
 
 

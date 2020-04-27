@@ -16,7 +16,15 @@
 #include "UART_register.h"
 #include "UART_private.h"
 
-const u8 BaudRateValue [3][3] =
+
+/* Macro function for ISR implementation */
+#define ISR(NO)  void __vector_##NO(void)	__attribute__((signal)); 	\
+		void __vector_##NO(void)
+
+/* Global variable */
+static u8 * UART_u8RecieveByte = NULL;
+
+const u8 UART_u8BaudRateValue [3][3] =
 {
 		/* 4800  , 9600  ,  115200 */
 		{  0x67  , 0x33  ,  0x03    }, /* System Frequency 0 -> 8M */
@@ -24,15 +32,17 @@ const u8 BaudRateValue [3][3] =
 		{  0xCF  , 0x67  ,  0x08    }  /* System Frequency 2 -> 16M */
 };
 
+
 void (*EndOfTransmitCBF)(void);
-void (*EndOfReceiveCBF)(u8);
+void (*EndOfReceiveCBF)(void);
+void (*EndOfReceiveCBF2)(u8);
 
 /*
     Description: This function shall initiate UART  
     Input: void
     output: u8 -> represents error status
  */
-extern u8 UART_u8Initialize (void)
+u8 UART_u8Initialize (void)
 {
 	u8 Local_u8ErrorStatus = STD_TYPES_ERROR_OK;
 
@@ -45,7 +55,7 @@ extern u8 UART_u8Initialize (void)
 	CLR_BIT(UCSRB, UCSRB_UCSZ2);
 
 	/*
-	Selecting regitser
+	Selecting register
 	Setting parity
 	Setting stop bits
 	Setting character size by 8 bits
@@ -54,7 +64,7 @@ extern u8 UART_u8Initialize (void)
 
 
 	/* Assign Baudrate */
-	UBRRL = BaudRateValue[UART_u8_SYSTEM_FREQ][UART_u8_BAUDRATE];
+	UBRRL = UART_u8BaudRateValue[UART_u8_SYSTEM_FREQ][UART_u8_BAUDRATE];
 
 	return Local_u8ErrorStatus;
 }
@@ -64,7 +74,7 @@ extern u8 UART_u8Initialize (void)
     Input: Copy_u8Data -> represents data to be transmitted
     output: u8 -> represents error status
  */
-extern u8 UART_u8TransmitDataSynch (u8 Copy_u8Data)
+u8 UART_u8TransmitDataSynch (u8 Copy_u8Data)
 {
 	u8 Local_u8ErrorStatus = STD_TYPES_ERROR_OK;
 
@@ -99,7 +109,7 @@ extern u8 UART_u8TransmitDataSynch (u8 Copy_u8Data)
           2- Copy_ptrCallBack -> pointer to callback function
     output: u8 -> represents error status
  */
-extern u8 UART_u8TransmitDataAsynch (u8 Copy_u8Data, void(*Copy_ptrCallBack)(void))
+u8 UART_u8TransmitDataAsynch (u8 Copy_u8Data, void(*Copy_ptrCallBack)(void))
 {
 	u8 Local_u8ErrorStatus = STD_TYPES_ERROR_OK;
 
@@ -110,19 +120,17 @@ extern u8 UART_u8TransmitDataAsynch (u8 Copy_u8Data, void(*Copy_ptrCallBack)(voi
 	else
 	{
 		/* UDR register is empty interrupt enable */
-		SET_BIT(UCSRB,UCSRB_UDRIE);
 		/*
-		 Enable Tx interrupt
+		SET_BIT(UCSRB,UCSRB_UDRIE);
+		 */
+		/* Enable Tx interrupt */
 		SET_BIT(UCSRB,UCSRB_TX_INT_EN);
-		*/
 		/* Set data to UDR */
 		UDR_T = Copy_u8Data;
 
 		/* Save the callback address */
 		EndOfTransmitCBF = Copy_ptrCallBack;
 	}
-
-
 
 	return Local_u8ErrorStatus;
 }
@@ -133,7 +141,7 @@ extern u8 UART_u8TransmitDataAsynch (u8 Copy_u8Data, void(*Copy_ptrCallBack)(voi
           1- Copy_u8Data -> pointer to hold received data 
     output: u8 -> represents error status
  */
-extern u8 UART_u8ReceiveSynch (u8 * Copy_u8PtrData)
+u8 UART_u8ReceiveSynch (u8 * Copy_u8PtrData)
 {
 	u8 Local_u8ErrorStatus = STD_TYPES_ERROR_OK;
 
@@ -151,8 +159,9 @@ extern u8 UART_u8ReceiveSynch (u8 * Copy_u8PtrData)
 	}
 	else
 	{
-		/* Set data to receieved pointer */
+		/* Set data to received pointer */
 		*Copy_u8PtrData = UDR_R;
+
 	}
 
 	return Local_u8ErrorStatus;
@@ -160,10 +169,50 @@ extern u8 UART_u8ReceiveSynch (u8 * Copy_u8PtrData)
 
 /*
     Description: This function shall receive data asynchronous
-    Input: Copy_ptrCallBack -> pointer to callback function, with argument u8 that holds the received data 
+    Input:
+    		Copy_u8PtrData -> pointer to hold received data
+    		Copy_ptrCallBack -> pointer to callback function, with argument u8 that holds the received data
     output: u8 -> represents error status
  */
-extern u8 UART_u8ReceiveAsynch (void(*Copy_ptrCallBack)(u8))
+u8 UART_u8ReceiveAsynch (u8 * Copy_u8PtrData,void(*Copy_ptrCallBack)(void))
+{
+	u8 Local_u8ErrorStatus = STD_TYPES_ERROR_OK;
+
+	if (Copy_u8PtrData == NULL || Copy_ptrCallBack == NULL)
+	{
+		Local_u8ErrorStatus = STD_TYPES_ERROR_NULL_POINTER;
+	}
+	else
+	{
+		/* Check if data is received or not */
+		if (GET_BIT(UCSRA,UCSRA_RX_CMP) == 1)
+		{
+			*Copy_u8PtrData = UDR_R;
+			Copy_ptrCallBack();
+		}
+		else
+		{
+			/* Enable receive interrupt */
+			SET_BIT(UCSRB,UCSRB_RX_INT_EN);
+
+			/* Initialize global variable to hold the received byte */
+			UART_u8RecieveByte = Copy_u8PtrData;
+
+			/* Initialize global pointer to hold callback function */
+			EndOfReceiveCBF = Copy_ptrCallBack;
+		}
+	}
+
+	return Local_u8ErrorStatus;
+}
+
+
+/*
+    Description: This function shall receive data asynchronous
+    Input: Copy_ptrCallBack -> pointer to callback function, with argument u8 that holds the received data
+    output: u8 -> represents error status
+ */
+u8 UART_u8ReceiveAsynch2 (void(*Copy_ptrCallBack)(u8))
 {
 	u8 Local_u8ErrorStatus = STD_TYPES_ERROR_OK;
 
@@ -184,27 +233,28 @@ extern u8 UART_u8ReceiveAsynch (void(*Copy_ptrCallBack)(u8))
 			/* Enable Rx interrupt */
 			SET_BIT(UCSRB,UCSRB_RX_INT_EN);
 			/* Save the callback address */
-			EndOfReceiveCBF = Copy_ptrCallBack;
+			EndOfReceiveCBF2 = Copy_ptrCallBack;
 		}
 	}
 
 	return Local_u8ErrorStatus;
 }
 
-void __vector_13(void)	__attribute__((signal));
-void __vector_14(void)	__attribute__((signal));
 
-void __vector_13(void)
+
+
+ISR(13)
 {
 	/*
 	 * Disable Interrupt
 	 * Call Notification Function
 	 *  */
-	CLR_BIT(UCSRB,UCSRA_RX_CMP);
-	EndOfReceiveCBF(UDR_R);
+	CLR_BIT(UCSRB,UCSRB_RX_INT_EN);
+	*UART_u8RecieveByte = UDR_R;
+	EndOfReceiveCBF();
 }
 
-void __vector_14(void)
+ISR(14)
 {
 	/*
 	 * Disable Interrupt
@@ -214,4 +264,10 @@ void __vector_14(void)
 	EndOfTransmitCBF();
 }
 
+ISR(15)
+{
+	CLR_BIT(UCSRB,UCSRB_TX_INT_EN);
+
+	EndOfTransmitCBF();
+}
 

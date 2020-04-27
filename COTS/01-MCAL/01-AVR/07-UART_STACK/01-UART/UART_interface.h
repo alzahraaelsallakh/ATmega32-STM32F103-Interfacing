@@ -47,6 +47,8 @@ extern u8 UART_u8ReceiveSynch (u8 * Copy_u8PtrData);
     Input: Copy_ptrCallBack -> pointer to callback function, with argument u8 that holds the received data 
     output: u8 -> represents error status
 */
-extern u8 UART_u8ReceiveAsynch (void(*Copy_ptrCallBack)(u8));
+extern u8 UART_u8ReceiveAsynch (u8 * Copy_u8Data,void(*Copy_ptrCallBack)(void));
+
+extern u8 UART_u8ReceiveAsynch2 (void(*Copy_ptrCallBack)(u8));
 
 #endif

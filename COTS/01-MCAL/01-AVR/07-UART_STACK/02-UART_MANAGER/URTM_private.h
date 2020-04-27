@@ -10,12 +10,17 @@
 #ifndef URTM_PRIVATE_H
 #define URTM_PRIVATE_H
 
-static void voidExecute (void);
+
 static void voidStart (void);
+
 static void voidSendSync (void);
+
 static void voidSendAsynch (void);
+
 static void voidRecSync (void);
+
 static void voidRecAsynch (void);
 
+static void AsynchCallBack(void);
 
 #endif
