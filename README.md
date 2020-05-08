@@ -1,5 +1,6 @@
-# HW_SW_Interfacing
-Layered architecture for AVR Atmega32 and ARM STM32F10x
+# ATmega32 and STM32F103 Interfacing Drivers and SW Modules
+
+Layered architecture for AVR Atmega32 and ARM STM32F103
 
  <p align="center">
   <img  src="../media/layeredArch.png?raw=true">
