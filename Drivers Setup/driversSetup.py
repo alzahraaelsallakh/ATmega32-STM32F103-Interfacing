@@ -16,9 +16,9 @@ driverName = ""
 driverLayer = ""
 
 requiredFiles = []
-requiredFilesMCAL = ['_program.c','_interface.h','_config.h','_register.h','_private.h']
-requiredFilesHAL = ['_program.c','_interface.h','_config.h','_private.h']
-requiredFilesOS = ['_program.c','_interface.h','_config.h','_private.h']
+requiredFilesMCAL = ['_program.c','_interface.h','_private.h','_config.h','_register.h']
+requiredFilesHAL = ['_program.c','_interface.h','_private.h','_config.h']
+requiredFilesOS = ['_program.c','_interface.h','_private.h','_config.h']
 requiredFilesLIB = ['.h']
 requiredFilesAPP = ['.c']
 
